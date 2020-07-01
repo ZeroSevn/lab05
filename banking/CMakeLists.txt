@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.4)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(BUILD_TESTS "Build tests" OFF)
+option(COVERAGE "Coverage" OFF)
+
 project(lab05)
 
 include_directories(${PROJECT_NAME} .)
@@ -37,4 +40,9 @@ if (BUILD_TESTS)
     add_executable(test ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_TEST_SOURCES})
     target_link_libraries(test gtest gmock_main)
     add_test(NAME test COMMAND test)
+endif()
+
+if (COVERAGE)
+    target_compile_options(test PRIVATE --coverage)
+    target_link_libraries(test --coverage)
 endif()

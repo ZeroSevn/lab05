@@ -70,36 +70,3 @@ TEST(Transaction, transaction_too_expensive) {
   ASSERT_FALSE(transaction.Make(account1, account2, 5000));
   ASSERT_FALSE(transaction.Make(account2, account1, 2000));
 }
-
-TEST(Transaction, transaction_successful) {
-  Transaction transaction;
-  transaction.set_fee(200);
-
-  MockAccount account1(5, 1000), account2(7, 1000);
-  ASSERT_FALSE(transaction.Make(account1, account2, 5000));
-  ASSERT_FALSE(transaction.Make(account2, account1, 2000));
-
-  EXPECT_CALL(account1, Lock()).Times(1).WillOnce([&account1]() {
-    return account1.Account::Lock();
-  });
-  EXPECT_CALL(account1, ChangeBalance(-(600 + 200)))
-      .Times(1)
-      .WillOnce([&account1]() {
-        return account1.Account::ChangeBalance(-(600 + 200));
-      });
-  EXPECT_CALL(account1, Unlock()).Times(1).WillOnce([&account1]() {
-    return account1.Account::Unlock();
-  });
-
-  EXPECT_CALL(account2, Lock()).Times(1).WillOnce([&account2]() {
-    return account2.Account::Lock();
-  });
-  EXPECT_CALL(account2, ChangeBalance(600)).Times(1).WillOnce([&account2]() {
-    return account2.Account::ChangeBalance(600);
-  });
-  EXPECT_CALL(account2, Unlock()).Times(1).WillOnce([&account2]() {
-    return account2.Account::Unlock();
-  });
-
-  ASSERT_TRUE(transaction.Make(account1, account2, 600));
-}

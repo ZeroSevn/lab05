@@ -1,0 +1,10 @@
+language: cpp
+
+before_script:
+  - cd banking
+  - cmake -H. -Bbuild -DBUILD_TESTS=ON
+
+script:
+  - cmake --build build --target test
+  - ./build/test
+
